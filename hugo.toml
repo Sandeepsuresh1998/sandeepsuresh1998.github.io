@@ -1,4 +1,17 @@
 baseURL = 'https://sandeepsuresh98.github.io/'
 languageCode = 'en-us'
-title = 'Sandeep Corner'
+title = "Sandeep's Internet Corner"
 theme = 'PaperMod'
+
+[params]
+  [params.homeInfoParams]
+    Title = "Welcome! 👋🏽"
+    Content = "Sometimes I talk about engineering, often I don't!"
+
+  [[params.socialIcons]]
+    name = "Twitter"
+    url = "https://x.com/sandeep98suresh"
+
+  [[params.socialIcons]]
+    name = "GitHub"
+    url = "https://github.com/sandeepsuresh1998"
