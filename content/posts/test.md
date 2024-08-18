@@ -6,4 +6,3 @@ description: "noice"
 ---
 
 This is a test post.
-```
