@@ -13,14 +13,21 @@
       <link>http://localhost:1313/posts/organic_solar_cells/</link>
       <pubDate>Sat, 03 Aug 2024 00:00:00 +0000</pubDate>
       <guid>http://localhost:1313/posts/organic_solar_cells/</guid>
-      <description>The future of solar cells is organic</description>
+      <description>The Future of Solar Cells is Organic</description>
+    </item>
+    <item>
+      <title>3D Prints</title>
+      <link>http://localhost:1313/posts/3d_prints/</link>
+      <pubDate>Fri, 01 Mar 2024 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/3d_prints/</guid>
+      <description>A list of 3D prints with links</description>
     </item>
     <item>
       <title>Test</title>
       <link>http://localhost:1313/posts/test/</link>
       <pubDate>Fri, 01 Mar 2024 00:00:00 +0000</pubDate>
       <guid>http://localhost:1313/posts/test/</guid>
-      <description>This is a test post.</description>
+      <description>noice</description>
     </item>
   </channel>
 </rss>

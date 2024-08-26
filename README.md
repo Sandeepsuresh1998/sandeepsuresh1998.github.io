@@ -61,7 +61,3 @@ When you're ready to publish:
 1. Set `draft = false` in the post's front matter.
 2. Commit your changes to your Git repository.
 3. Push the changes to your hosting platform (e.g., GitHub Pages).
-
-## Example Post Front Matter
-
-Here's an example of a more detailed front matter for a post:
