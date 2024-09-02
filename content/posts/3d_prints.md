@@ -14,3 +14,5 @@ I've been printing a lot of things lately (if you've never printed anything befo
 - [Hulk](https://www.thingiverse.com/thing:2144718)
 - [Hexagon Basket](https://www.printables.com/model/891382-hexagon-pattern-basket-no2-small-size/comments)
 - [Theragun Holder](https://www.thingiverse.com/thing:4977193)  
+- [Desk Organizer](https://makerworld.com/en/models/613287?from=recommend#profileId-536584)
+- [Design Bowl](https://makerworld.com/en/models/607018#profileId-529940)
