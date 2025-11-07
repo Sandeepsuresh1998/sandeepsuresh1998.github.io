@@ -61,3 +61,62 @@ When you're ready to publish:
 1. Set `draft = false` in the post's front matter.
 2. Commit your changes to your Git repository.
 3. Push the changes to your hosting platform (e.g., GitHub Pages).
+
+---
+
+## 🚨 Troubleshooting
+
+### **My new post isn't showing up!**
+
+**Check these things in order:**
+
+1. **Is the post marked as a draft?**
+   - Open your post file in `content/posts/`
+   - Check if `draft = true` in the front matter
+   - Either change it to `draft = false` OR run `hugo server -D` to view drafts
+
+2. **Is the Hugo server running?**
+   - Check your terminal for the message: `Web Server is available at http://localhost:1313/`
+   - If not running, start it with: `hugo server -D`
+   - The `-D` flag includes draft posts
+
+3. **Is the theme missing?**
+   - If you see warnings like "found no layout file for html", the theme is missing
+   - Run: `git submodule update --init --recursive`
+   - This downloads the PaperMod theme files
+   - Restart the server: `hugo server -D`
+
+### **Starting fresh after cloning the repo**
+
+When you first clone this repo or come back after a while:
+
+```bash
+cd /path/to/sandeepsuresh1998.github.io
+
+# Initialize the theme (IMPORTANT - do this first!)
+git submodule update --init --recursive
+
+# Start the development server
+hugo server -D
+
+# Visit http://localhost:1313 in your browser
+```
+
+### **Common Commands**
+
+| Problem | Solution |
+|---------|----------|
+| Theme is missing | `git submodule update --init --recursive` |
+| Server won't start | Make sure Hugo is installed: `hugo version` |
+| Install Hugo | `brew install hugo` |
+| Post not showing | Check `draft = true/false` in front matter |
+| Changes not updating | Restart server: Kill with `Ctrl+C`, then `hugo server -D` |
+| See drafts locally | Always use `hugo server -D` (with `-D` flag) |
+
+### **Quick Workflow Reminder**
+
+1. **Create post:** `hugo new posts/my-post.md`
+2. **Edit content:** Open `content/posts/my-post.md` in your editor
+3. **Preview:** Make sure `hugo server -D` is running, visit `http://localhost:1313`
+4. **Publish:** Change `draft = false` in the post
+5. **Deploy:** `git add .`, `git commit -m "New post"`, `git push`
