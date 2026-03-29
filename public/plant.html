@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sandeep's Garden</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%; height: 100%;
+    background: #0a0a0a;
+    overflow: hidden;
+    font-family: 'Georgia', serif;
+  }
+  svg {
+    display: block;
+    width: 100%; height: 100%;
+  }
+
+  /* ---- leaf labels ---- */
+  .leaf-label {
+    position: absolute;
+    color: rgba(255,255,255,0);
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    pointer-events: none;
+    transition: color 0.6s ease;
+    white-space: nowrap;
+    font-family: 'Courier New', monospace;
+    text-shadow: 0 0 12px rgba(100,200,100,0.4);
+    transform: translate(-50%, -50%);
+  }
+  .leaf-label.visible {
+    color: rgba(255,255,255,0.75);
+    pointer-events: auto;
+    cursor: pointer;
+  }
+  .leaf-label:hover {
+    color: #fff;
+    text-shadow: 0 0 20px rgba(120,220,120,0.6);
+  }
+
+  /* ---- content overlay ---- */
+  #overlay {
+    position: fixed; inset: 0;
+    background: rgba(5,5,5,0.92);
+    backdrop-filter: blur(16px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+  }
+  #overlay.open { opacity: 1; pointer-events: auto; }
+  #overlay-inner {
+    max-width: 560px;
+    padding: 48px;
+    color: #ccc;
+    font-size: 16px;
+    line-height: 1.7;
+    transform: translateY(20px);
+    transition: transform 0.5s cubic-bezier(.4,0,.2,1);
+  }
+  #overlay.open #overlay-inner { transform: translateY(0); }
+  #overlay h2 {
+    color: #8ecf8e;
+    font-size: 28px;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 400;
+  }
+  #overlay a {
+    color: #8ecf8e;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(142,207,142,0.3);
+    transition: border-color 0.3s;
+  }
+  #overlay a:hover { border-color: #8ecf8e; }
+  #close-btn {
+    position: absolute;
+    top: 32px; right: 40px;
+    background: none; border: none;
+    color: #666; font-size: 28px;
+    cursor: pointer;
+    transition: color 0.3s;
+    font-family: 'Courier New', monospace;
+  }
+  #close-btn:hover { color: #fff; }
+  .content-section { display: none; }
+  .content-section.active { display: block; }
+  .social-link {
+    display: inline-block;
+    margin: 8px 16px 8px 0;
+    padding: 8px 16px;
+    border: 1px solid rgba(142,207,142,0.25);
+    border-radius: 4px;
+    transition: background 0.3s, border-color 0.3s;
+  }
+  .social-link:hover {
+    background: rgba(142,207,142,0.08);
+    border-color: rgba(142,207,142,0.5);
+  }
+</style>
+</head>
+<body>
+
+<svg id="scene" viewBox="0 0 800 700" preserveAspectRatio="xMidYMax meet">
+  <defs>
+    <!-- subtle glow for leaves -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="g"/>
+      <feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+
+    <!-- radial gradient for pot -->
+    <linearGradient id="potGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#c47a5a"/>
+      <stop offset="100%" stop-color="#8b4f35"/>
+    </linearGradient>
+    <linearGradient id="potRim" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d4907a"/>
+      <stop offset="100%" stop-color="#b06848"/>
+    </linearGradient>
+
+    <!-- leaf gradient -->
+    <linearGradient id="leafGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#5daa45"/>
+      <stop offset="50%"  stop-color="#3d8a2e"/>
+      <stop offset="100%" stop-color="#2a6e1e"/>
+    </linearGradient>
+    <linearGradient id="leafGradDark" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#4a9438"/>
+      <stop offset="50%"  stop-color="#327826"/>
+      <stop offset="100%" stop-color="#1f5c14"/>
+    </linearGradient>
+  </defs>
+
+  <!-- pot -->
+  <g id="pot" transform="translate(400, 620)">
+    <!-- pot body -->
+    <path d="M-52,0 L-45,-75 L45,-75 L52,0 Z" fill="url(#potGrad)" />
+    <!-- rim -->
+    <rect x="-58" y="-82" width="116" height="12" rx="3" fill="url(#potRim)" />
+    <!-- soil -->
+    <ellipse cx="0" cy="-75" rx="44" ry="8" fill="#3a2618" />
+    <!-- pot base -->
+    <rect x="-30" y="0" width="60" height="6" rx="2" fill="#7a4330" />
+  </g>
+
+  <!-- plant group - everything grows from here -->
+  <g id="plant" transform="translate(400, 545)">
+    <!-- stems and leaves are built by JS -->
+  </g>
+</svg>
+
+<!-- leaf labels (positioned by JS) -->
+<div id="labels"></div>
+
+<!-- content overlay -->
+<div id="overlay">
+  <button id="close-btn">&times;</button>
+  <div id="overlay-inner">
+    <div class="content-section" data-section="career">
+      <h2>Career</h2>
+      <p>Software engineer. Builder of things. Currently exploring the intersection of AI and developer tools.</p>
+      <p style="margin-top:16px; color:#888;">More details coming soon...</p>
+    </div>
+    <div class="content-section" data-section="blog">
+      <h2>Blog</h2>
+      <p><strong style="color:#aaa;">My Favorite 3D Prints</strong> <span style="color:#666;">&mdash; Aug 2024</span></p>
+      <p style="margin-top:8px;">A collection of my favorite things I've printed on my Bambu P1P. From desk organizers to docks.</p>
+      <p style="margin-top:16px; color:#888;">More posts coming...</p>
+    </div>
+    <div class="content-section" data-section="contact">
+      <h2>Contact</h2>
+      <p>Want to chat? Reach out.</p>
+      <p style="margin-top:12px;">The best way is through Twitter/X or GitHub.</p>
+    </div>
+    <div class="content-section" data-section="socials">
+      <h2>Socials</h2>
+      <p>
+        <a href="https://x.com/sandeep98suresh" target="_blank" class="social-link">Twitter / X</a>
+        <a href="https://github.com/sandeepsuresh1998" target="_blank" class="social-link">GitHub</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── CONFIG ────────────────────────────────────────────────────────────
+const STEMS = [
+  { angle: -55, len: 220, label: 'career',  leafSide:  1, delay: 0.0 },
+  { angle: -30, len: 260, label: 'blog',    leafSide: -1, delay: 0.6 },
+  { angle:  25, len: 240, label: 'contact', leafSide:  1, delay: 1.2 },
+  { angle:  50, len: 200, label: 'socials', leafSide: -1, delay: 1.8 },
+];
+
+const GROW_DURATION   = 2.8;   // seconds per stem grow
+const UNFURL_DURATION = 1.6;   // seconds per leaf unfurl
+const WIND_STRENGTH   = 0.012; // idle sway amplitude
+
+const plant = document.getElementById('plant');
+const labelsDiv = document.getElementById('labels');
+const overlay = document.getElementById('overlay');
+const closeBtn = document.getElementById('close-btn');
+
+// ─── SVG HELPERS ───────────────────────────────────────────────────────
+const svgNS = 'http://www.w3.org/2000/svg';
+function el(tag, attrs) {
+  const e = document.createElementNS(svgNS, tag);
+  for (const [k, v] of Object.entries(attrs || {})) e.setAttribute(k, v);
+  return e;
+}
+function deg(r) { return r * 180 / Math.PI; }
+function rad(d) { return d * Math.PI / 180; }
+
+// ─── BUILD EACH BRANCH ────────────────────────────────────────────────
+const branches = STEMS.map((cfg, i) => {
+  const g = el('g');
+  plant.appendChild(g);
+
+  // --- stem: a quadratic bezier path ---
+  const a   = rad(cfg.angle);
+  const tipX = Math.sin(a) * cfg.len;
+  const tipY = -Math.cos(a) * cfg.len;
+  // control point: slightly inward curve
+  const cpX = tipX * 0.45 - cfg.leafSide * 12;
+  const cpY = tipY * 0.5;
+
+  const stemPath = el('path', {
+    d: `M0,0 Q${cpX},${cpY} ${tipX},${tipY}`,
+    stroke: '#3a7d2c',
+    'stroke-width': '5',
+    'stroke-linecap': 'round',
+    fill: 'none',
+  });
+  g.appendChild(stemPath);
+
+  const totalLen = stemPath.getTotalLength();
+  stemPath.style.strokeDasharray  = totalLen;
+  stemPath.style.strokeDashoffset = totalLen;
+
+  // --- leaf: a bird-of-paradise style paddle shape ---
+  const leafWrap = el('g');
+  leafWrap.setAttribute('transform', `translate(${tipX},${tipY})`);
+  g.appendChild(leafWrap);
+
+  const leafG = el('g');
+  leafWrap.appendChild(leafG);
+
+  // midrib
+  const midrib = el('line', {
+    x1: 0, y1: 0,
+    x2: 0, y2: -90,
+    stroke: '#2e6b20', 'stroke-width': '2.5', 'stroke-linecap': 'round'
+  });
+  leafG.appendChild(midrib);
+
+  // left half
+  const leafL = el('path', {
+    d: 'M0,0 C-12,-20 -38,-50 -32,-75 C-28,-88 -8,-92 0,-90',
+    fill: 'url(#leafGrad)',
+    opacity: '0.92',
+    filter: 'url(#glow)',
+  });
+  leafG.appendChild(leafL);
+
+  // right half
+  const leafR = el('path', {
+    d: 'M0,0 C12,-20 38,-50 32,-75 C28,-88 8,-92 0,-90',
+    fill: 'url(#leafGradDark)',
+    opacity: '0.88',
+    filter: 'url(#glow)',
+  });
+  leafG.appendChild(leafR);
+
+  // small secondary veins
+  for (let v = 1; v <= 5; v++) {
+    const vy = -v * 14;
+    const vx = (v < 4 ? v * 5 : (6 - v) * 5);
+    leafG.appendChild(el('line', {
+      x1: 0, y1: vy,
+      x2: -vx * 0.8, y2: vy - 4,
+      stroke: '#2e6b20', 'stroke-width': '0.8', opacity: '0.5'
+    }));
+    leafG.appendChild(el('line', {
+      x1: 0, y1: vy,
+      x2: vx * 0.8, y2: vy - 4,
+      stroke: '#2e6b20', 'stroke-width': '0.8', opacity: '0.5'
+    }));
+  }
+
+  // initial leaf state: tiny and curled
+  leafG.style.transformOrigin = '0px 0px';
+  leafG.style.transform = 'scale(0.05) rotate(0deg)';
+  leafG.style.opacity = '0';
+
+  // orient leaf outward from stem direction
+  const leafAngle = cfg.angle + cfg.leafSide * 15;
+  leafG.setAttribute('data-base-angle', leafAngle);
+
+  // --- label (HTML overlay) ---
+  const labelEl = document.createElement('div');
+  labelEl.className = 'leaf-label';
+  labelEl.textContent = cfg.label;
+  labelEl.addEventListener('click', () => openSection(cfg.label));
+  labelsDiv.appendChild(labelEl);
+
+  return {
+    cfg, g, stemPath, leafG, totalLen, tipX, tipY, labelEl,
+    stemProgress: 0,      // 0..1
+    leafProgress: 0,      // 0..1
+    windPhase: Math.random() * Math.PI * 2,
+    windFreq: 0.6 + Math.random() * 0.4,
+    baseAngle: leafAngle,
+  };
+});
+
+// ─── OVERLAY ───────────────────────────────────────────────────────────
+function openSection(name) {
+  document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+  const sec = document.querySelector(`[data-section="${name}"]`);
+  if (sec) sec.classList.add('active');
+  overlay.classList.add('open');
+}
+closeBtn.addEventListener('click', () => overlay.classList.remove('open'));
+overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('open'); });
+
+// ─── SPRING PHYSICS HELPER ─────────────────────────────────────────────
+// Simple damped spring: value chases target
+function springStep(current, target, velocity, stiffness, damping, dt) {
+  const force  = (target - current) * stiffness;
+  const damp   = velocity * damping;
+  const newVel  = velocity + (force - damp) * dt;
+  const newVal  = current + newVel * dt;
+  return { value: newVal, velocity: newVel };
+}
+
+// Per-branch spring state for sway
+branches.forEach(b => {
+  b.springAngle = { value: 0, velocity: 0 };
+  b.springScale = { value: 0.05, velocity: 0 };
+});
+
+// ─── ANIMATION LOOP ────────────────────────────────────────────────────
+let startTime = null;
+let labelsShown = false;
+
+function animate(now) {
+  if (!startTime) startTime = now;
+  const elapsed = (now - startTime) / 1000;
+  const dt = Math.min(1/30, 1/60); // fixed step for stability
+
+  let allGrown = true;
+
+  branches.forEach((b, i) => {
+    const t = elapsed - b.cfg.delay;
+
+    // ── stem growth ──
+    if (t > 0 && b.stemProgress < 1) {
+      b.stemProgress = Math.min(1, t / GROW_DURATION);
+      // ease out cubic
+      const eased = 1 - Math.pow(1 - b.stemProgress, 3);
+      b.stemPath.style.strokeDashoffset = b.totalLen * (1 - eased);
+    }
+
+    // ── leaf unfurl (starts when stem is ~70% grown) ──
+    const leafStart = b.cfg.delay + GROW_DURATION * 0.7;
+    const lt = elapsed - leafStart;
+    if (lt > 0 && b.leafProgress < 1) {
+      b.leafProgress = Math.min(1, lt / UNFURL_DURATION);
+    }
+
+    if (b.stemProgress < 1 || b.leafProgress < 1) allGrown = false;
+
+    // ── leaf spring animation ──
+    // target scale from progress
+    const targetScale = b.leafProgress;
+    const s = springStep(b.springScale.value, targetScale, b.springScale.velocity, 4.0, 3.5, dt);
+    b.springScale = s;
+
+    // wind/sway
+    const windTarget = Math.sin(elapsed * b.windFreq + b.windPhase) * WIND_STRENGTH * 40
+                     + Math.sin(elapsed * b.windFreq * 1.7 + b.windPhase * 0.5) * WIND_STRENGTH * 15;
+    const a = springStep(b.springAngle.value, windTarget, b.springAngle.velocity, 2.5, 2.0, dt);
+    b.springAngle = a;
+
+    // apply leaf transform
+    const scale   = Math.max(0.01, s.value);
+    const rotDeg  = b.baseAngle + a.value;
+    b.leafG.style.transform = `scale(${scale}) rotate(${rotDeg}deg)`;
+    b.leafG.style.opacity   = Math.min(1, b.leafProgress * 3);
+
+    // ── label positioning ──
+    // get tip position in viewport coords
+    const svg = document.getElementById('scene');
+    const pt  = svg.createSVGPoint();
+    // leaf tip in leaf-local coords, accounting for scale/rotation
+    const leafTipLocalY = -90 * scale;
+    const leafRotRad    = rad(rotDeg);
+    const leafTipWorldX = parseFloat(b.tipX) + Math.sin(leafRotRad) * leafTipLocalY * -1;
+    const leafTipWorldY = parseFloat(b.tipY) + Math.cos(leafRotRad) * leafTipLocalY;
+
+    pt.x = 400 + leafTipWorldX;
+    pt.y = 545 + leafTipWorldY - 20; // offset above tip
+    const ctm = svg.getScreenCTM();
+    if (ctm) {
+      const screenPt = pt.matrixTransform(ctm);
+      b.labelEl.style.left = screenPt.x + 'px';
+      b.labelEl.style.top  = screenPt.y + 'px';
+    }
+  });
+
+  // show labels once all grown
+  if (allGrown && !labelsShown) {
+    labelsShown = true;
+    branches.forEach((b, i) => {
+      setTimeout(() => b.labelEl.classList.add('visible'), i * 150);
+    });
+  }
+
+  requestAnimationFrame(animate);
+}
+
+requestAnimationFrame(animate);
+
+// ── handle resize for label positions ──
+window.addEventListener('resize', () => {
+  // labels reposition automatically each frame
+});
+</script>
+</body>
+</html>
