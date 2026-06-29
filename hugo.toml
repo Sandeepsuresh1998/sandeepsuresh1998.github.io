@@ -1,17 +1,26 @@
-baseURL = 'https://sandeepsuresh98.github.io/'
+baseURL = 'https://sandeepsuresh1998.github.io/'
 languageCode = 'en-us'
-title = "Sandeep's Internet Corner"
+title = 'Sandeep Suresh'
 theme = 'PaperMod'
+disableKinds = ['taxonomy', 'term', 'RSS']
 
 [params]
-  [params.homeInfoParams]
-    Title = "Welcome! 👋🏽"
-    Content = "Sometimes I talk about engineering, often I don't!"
+  author = 'Sandeep Suresh'
+  description = 'Personal website for writing, career notes, and contact information.'
+  github = 'https://github.com/sandeepsuresh1998'
+  twitter = 'https://x.com/sandeep98suresh'
 
-  [[params.socialIcons]]
-    name = "Twitter"
-    url = "https://x.com/sandeep98suresh"
+[[menu.main]]
+  name = 'Writing'
+  url = '/writing/'
+  weight = 10
 
-  [[params.socialIcons]]
-    name = "GitHub"
-    url = "https://github.com/sandeepsuresh1998"
+[[menu.main]]
+  name = 'Contact'
+  url = '/contact/'
+  weight = 20
+
+[[menu.main]]
+  name = 'Career'
+  url = '/career/'
+  weight = 30

@@ -1,0 +1,39 @@
+{{ define "main" }}
+<section class="hero">
+  <div class="hero-copy">
+    <p class="eyebrow">Personal website</p>
+    <h1><span>Sandeep</span> <span>Suresh</span></h1>
+    <p class="lede">A place for writing, career notes, and the clearest ways to get in touch.</p>
+    <div class="hero-actions" aria-label="Primary links">
+      <a class="button button-primary" href="{{ "/writing/" | relURL }}">Read writing</a>
+      <a class="button button-secondary" href="{{ "/contact/" | relURL }}">Get in touch</a>
+    </div>
+  </div>
+  <div class="hero-visual" aria-hidden="true">
+    <div class="signal-plane">
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+</section>
+
+<section class="section-grid" aria-label="Site sections">
+  <a class="feature-panel" href="{{ "/writing/" | relURL }}">
+    <span class="kicker">Writing</span>
+    <h2>Essays and notes</h2>
+    <p>Longer-form ideas, technical notes, and observations will live here.</p>
+  </a>
+  <a class="feature-panel" href="{{ "/career/" | relURL }}">
+    <span class="kicker">Career</span>
+    <h2>Work and projects</h2>
+    <p>A focused summary of experience, current work, and selected projects.</p>
+  </a>
+  <a class="feature-panel" href="{{ "/contact/" | relURL }}">
+    <span class="kicker">Contact</span>
+    <h2>Reach out</h2>
+    <p>Preferred links and contact details, with room for availability notes.</p>
+  </a>
+</section>
+{{ end }}
